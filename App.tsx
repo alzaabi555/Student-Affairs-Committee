@@ -687,8 +687,13 @@ function App() {
                     </div>
 
                     {/* Paper */}
-                    <div className="a4-paper transform origin-top md:scale-95 lg:scale-100 transition-transform shadow-2xl border border-gray-200">
-                        <div className="h-full flex flex-col text-black">
+                    <div className="a4-paper transform origin-top md:scale-95 lg:scale-100 transition-transform shadow-2xl border border-gray-200 relative">
+                        {/* Page Frame Border */}
+                        <div className="absolute inset-0 p-[5mm] pointer-events-none z-0">
+                             <div className="w-full h-full border-2 border-black"></div>
+                        </div>
+
+                        <div className="h-full flex flex-col text-black relative z-10">
                             <FormRenderer type={activeForm} data={formData} settings={settings} />
                         </div>
                     </div>

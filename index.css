@@ -1,32 +1,34 @@
 /* Screen Layout */
 .a4-paper {
   width: 210mm;
-  height: 297mm; /* Fixed height for screen preview clarity */
+  min-height: 297mm; /* Ensure it looks like A4 on screen */
   background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  margin: auto;
-  padding: 5mm; /* Minimal padding for screen readability, effectively 0 margins for print logic */
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  padding: 10mm; /* Safe padding for most printers */
   position: relative;
   font-family: 'Amiri', serif;
-  box-sizing: border-box; /* Crucial: Padding is included in width/height */
-  overflow: hidden; /* Prevent overflow on screen */
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Print Layout */
 @media print {
   @page { 
     size: A4; 
-    margin: 0; /* Remove browser default margins */
+    margin: 0; /* Let CSS handle margins via padding */
   }
   
   body { 
     -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact;
     margin: 0;
     padding: 0;
-    background-color: white;
+    background-color: white !important;
   }
 
-  #root, body, .flex, .h-screen, .overflow-hidden, main, .bg-gray-100 {
+  /* Reset main containers to allow flow, BUT DO NOT RESET .flex */
+  #root, body, .h-screen, .overflow-hidden, main, .bg-gray-100 {
     display: block !important;
     height: auto !important;
     width: auto !important;
@@ -35,24 +37,29 @@
     position: static !important;
   }
 
-  .no-print, aside, button, .border-l {
+  /* Hide UI elements */
+  .no-print, aside, button, .border-l, ::-webkit-scrollbar {
     display: none !important;
   }
 
+  /* Enforce exact A4 dimensions */
   .a4-paper {
     width: 210mm !important;
     height: 297mm !important;
-    margin: 0 auto !important;
-    padding: 5mm !important; /* Extremely small internal padding to avoid text touching edge */
+    margin: 0 !important;
+    padding: 10mm !important; /* Keep padding consistent with screen */
     box-shadow: none !important;
     border: none !important;
     page-break-after: always;
     box-sizing: border-box !important;
-    overflow: hidden !important; /* Ensure content stays inside */
-    transform: none !important; /* Prevent scaling */
+    overflow: hidden !important;
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
   }
 
-  ::-webkit-scrollbar {
-    display: none;
+  /* Force black text for clearer printing */
+  p, h1, h2, h3, h4, span, div {
+    color: black !important;
   }
 }
