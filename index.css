@@ -1,0 +1,58 @@
+/* Screen Layout */
+.a4-paper {
+  width: 210mm;
+  height: 297mm; /* Fixed height for screen preview clarity */
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin: auto;
+  padding: 5mm; /* Minimal padding for screen readability, effectively 0 margins for print logic */
+  position: relative;
+  font-family: 'Amiri', serif;
+  box-sizing: border-box; /* Crucial: Padding is included in width/height */
+  overflow: hidden; /* Prevent overflow on screen */
+}
+
+/* Print Layout */
+@media print {
+  @page { 
+    size: A4; 
+    margin: 0; /* Remove browser default margins */
+  }
+  
+  body { 
+    -webkit-print-color-adjust: exact; 
+    margin: 0;
+    padding: 0;
+    background-color: white;
+  }
+
+  #root, body, .flex, .h-screen, .overflow-hidden, main, .bg-gray-100 {
+    display: block !important;
+    height: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    position: static !important;
+  }
+
+  .no-print, aside, button, .border-l {
+    display: none !important;
+  }
+
+  .a4-paper {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 auto !important;
+    padding: 5mm !important; /* Extremely small internal padding to avoid text touching edge */
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always;
+    box-sizing: border-box !important;
+    overflow: hidden !important; /* Ensure content stays inside */
+    transform: none !important; /* Prevent scaling */
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
