@@ -112,7 +112,24 @@ function App() {
   ).slice(0, 5);
 
   const handlePrint = () => {
-    document.title = `${formData.studentName}_${activeForm}`;
+    // 1. Get readable Form Title
+    const formTitle = FORM_TITLES[activeForm] || 'وثيقة';
+    
+    // 2. Get Student Name (or default)
+    const studentName = formData.studentName || 'طالب';
+    
+    // 3. Get Grade (if exists)
+    const grade = formData.grade ? ` - ${formData.grade}` : '';
+
+    // 4. Construct Filename: "Ahmed Mohamed - 5/1 - Warning Form"
+    // Replace invalid filename characters (like / \ : * ? " < > |) with dashes
+    // 5/1 becomes 5-1 automatically due to regex replacement of '/'
+    const rawFileName = `${studentName}${grade} - ${formTitle}`;
+    const fileName = rawFileName.replace(/[\/\\:*?"<>|]/g, '-');
+    
+    // 5. Set document title (Browsers use this as the default 'Save as PDF' filename)
+    document.title = fileName;
+
     window.print();
   };
 
@@ -164,11 +181,40 @@ function App() {
     if (phone.length === 8) {
         phone = '968' + phone;
     }
-    const title = FORM_TITLES[activeForm];
-    const student = formData.studentName;
-    const message = `السلام عليكم ولي أمر الطالب ${student}. \nيرجى الاطلاع على المرفق الخاص بـ "${title}". \nنشكر تعاونكم.\nإدارة مدرسة الإبداع للبنين`;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+
+    // Logic Explanation for the User:
+    // We are using the official API Deep Link.
+    // However, NO browser technology allows auto-attaching a file to WhatsApp due to strict security sandbox rules.
+    // We must guide the user to do the drag-and-drop.
+    
+    const confirmMsg = 
+        "تنبيه هام جداً:\n" +
+        "سيقوم النظام الآن بفتح محادثة واتساب باستخدام الرابط العميق (API).\n\n" +
+        "⚠️ ملاحظة: بسبب قيود واتساب الأمنية، لا يمكن للبرنامج إرفاق الملف تلقائياً (سيظهر مربع الكتابة فقط).\n\n" +
+        "لإرسال الملف بنجاح:\n" +
+        "1. اضغط موافق لحفظ المستند (PDF) على جهازك.\n" +
+        "2. سيفتح تطبيق واتساب تلقائياً.\n" +
+        "3. قم بسحب ملف PDF وإفلاته داخل المحادثة يدوياً.\n\n" +
+        "هل تريد المتابعة؟";
+
+    if (window.confirm(confirmMsg)) {
+        // 1. Prepare Message
+        const title = FORM_TITLES[activeForm];
+        const student = formData.studentName;
+        const message = `السلام عليكم ولي أمر الطالب: ${student}\n\nيرجى التكرم بالاطلاع على ملف "${title}" المرفق أدناه.\n\nشاكرين تعاونكم،،\nإدارة مدرسة الإبداع للبنين`;
+        
+        // 2. USE DEEP LINK / API (Standard Protocol)
+        // This is more reliable than wa.me for triggering desktop apps
+        const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+        
+        // Open in new tab (This triggers the 'Open WhatsApp?' dialog in browsers)
+        window.open(url, '_blank');
+
+        // 3. Trigger Print Dialog to allow user to save the PDF (Small delay to ensure tab opens first)
+        setTimeout(() => {
+            handlePrint();
+        }, 1000);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -198,7 +244,6 @@ function App() {
   const menuItems = [
     { id: FormType.INVITATION_GENERAL, label: 'دعوة ولي أمر (عام)', icon: <Users size={18} /> },
     { id: FormType.INVITATION_TEACHER, label: 'دعوة ولي أمر (معلم)', icon: <BookOpen size={18} /> },
-    { id: FormType.INVITATION_SUSPENSION, label: 'دعوة (إجراءات)', icon: <Users size={18} /> },
     { id: FormType.ANNEX_3_ADVICE, label: 'إخطار بنصح (3)', icon: <FileText size={18} /> },
     { id: FormType.ANNEX_4_ALERT, label: 'تنبيه طالب (4)', icon: <AlertTriangle size={18} /> },
     { id: FormType.ANNEX_5_WARNING, label: 'استمارة إنذار (5)', icon: <FileWarning size={18} /> },
@@ -366,8 +411,8 @@ function App() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">الرقم المدني (للطالب)</label>
-                                <input type="text" name="civilId" value={formData.civilId} onChange={handleInputChange} className="w-full p-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="1234..." />
+                                <label className="block text-sm font-medium text-gray-700 mb-1">الرقم</label>
+                                <input type="text" name="documentNumber" value={formData.documentNumber} onChange={handleInputChange} className="w-full p-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="الرقم" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">الصف</label>

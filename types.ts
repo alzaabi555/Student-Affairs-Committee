@@ -37,7 +37,7 @@ export interface StudentData {
   studentName: string;
   guardianName: string;
   grade: string;
-  civilId: string;
+  documentNumber: string; // Replaced civilId with documentNumber
   guardianPhone: string;
   incidentDate: string;
   adminNumber: string; // Internal reference number
@@ -111,7 +111,7 @@ export const INITIAL_DATA: StudentData = {
   studentName: '',
   guardianName: '',
   grade: '',
-  civilId: '',
+  documentNumber: '',
   guardianPhone: '',
   incidentDate: new Date().toISOString().split('T')[0],
   adminNumber: '',
