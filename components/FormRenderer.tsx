@@ -18,8 +18,8 @@ const SquareBox: React.FC<{ checked: boolean }> = ({ checked }) => (
 );
 
 // Improved DottedLine: Compacts appropriately
-const DottedLine: React.FC<{ text?: string, className?: string, width?: string }> = ({ text, className, width }) => (
-    <span className={`border-b-2 border-dotted border-black inline-block px-2 text-center leading-loose ${width ? width : 'min-w-[40px]'} ${className}`}>
+const DottedLine: React.FC<{ text?: string, className?: string, width?: string, dir?: string }> = ({ text, className, width, dir }) => (
+    <span dir={dir} className={`border-b-2 border-dotted border-black inline-block px-2 text-center leading-loose ${width ? width : 'min-w-[40px]'} ${className}`}>
         {text || ''}&nbsp;
     </span>
 );
